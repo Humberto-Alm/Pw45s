@@ -1,70 +1,44 @@
 using Microsoft.AspNetCore.Mvc;
+using NetCrud.DTO;
 using NetCrud.Model;
-
-namespace NetCrud.Controllers;
-
+using NetCrud.Repositories;
 
 [ApiController]
 [Route("api/[controller]")]
 public class ProductController : ControllerBase
 {
-    // 💾 Armazenamento em memória (estático para persistir entre requisições)
-    private static List<Product> _produtos = new();
-    private static int _proximoId = 1;
+    private ProductRepository _repository;
 
-    // ✅ READ ALL - GET /api/produtos
-    [HttpGet]
-    public ActionResult<IEnumerable<Product>> GetAll()
+    public ProductController(ProductRepository repository)
     {
-        return Ok(_produtos);
+        _repository = repository;
     }
 
-    // ✅ READ ONE - GET /api/produtos/{id}
-    [HttpGet("{id}")]
+    [HttpGet("GetAll")]
+    public ActionResult<IEnumerable<Product>> GetAll() =>Ok(_repository.GetAll());
+
+    [HttpGet("GetById/{id}")]
     public ActionResult<Product> GetById(int id)
     {
-        var produto = _produtos.FirstOrDefault(p => p.Id == id);
-        if (produto is null)
-            return NotFound($"Produto com ID {id} não encontrado.");
-
-        return Ok(produto);
+        var produto = _repository.GetById(id);
+        return produto is null ? NotFound($"Produto com ID {id} não encontrado.") : Ok(produto);
     }
 
-    // ✅ CREATE - POST /api/produtos
-    [HttpPost]
-    public ActionResult<Product> Create([FromBody] Product novoProduto)
+    [HttpPost("Create/{id}")]
+    public ActionResult<Product> Create([FromBody] ProductDto dto)
     {
-        novoProduto.Id = _proximoId++;
-        _produtos.Add(novoProduto);
-
-        return CreatedAtAction(nameof(GetById), new { id = novoProduto.Id }, novoProduto);
+        var criado = _repository.Create(new Product { Nome = dto.Nome, Preco = dto.Preco, Quantidade = dto.Quantidade });
+        return CreatedAtAction(nameof(GetById), new { id = criado.Id }, criado);
     }
 
-    // ✅ UPDATE - PUT /api/produtos/{id}
-    [HttpPut("{id}")]
-    public ActionResult Update(int id, [FromBody] Product produtoAtualizado)
+    [HttpPut("Update/{id}")]
+    public ActionResult Update(int id, [FromBody] ProductDto dto)
     {
-        var produto = _produtos.FirstOrDefault(p => p.Id == id);
-        if (produto is null)
-            return NotFound($"Produto com ID {id} não encontrado.");
-
-        produto.Nome = produtoAtualizado.Nome;
-        produto.Preco = produtoAtualizado.Preco;
-        produto.Quantidade = produtoAtualizado.Quantidade;
-
-        return NoContent();
+        var atualizado = new Product { Nome = dto.Nome, Preco = dto.Preco, Quantidade = dto.Quantidade };
+        return _repository.Update(id, atualizado) ? NoContent() : NotFound($"Produto com ID {id} não encontrado.");
     }
 
-    // ✅ DELETE - DELETE /api/produtos/{id}
-    [HttpDelete("{id}")]
-    public ActionResult Delete(int id)
-    {
-        var produto = _produtos.FirstOrDefault(p => p.Id == id);
-        if (produto is null)
-            return NotFound($"Produto com ID {id} não encontrado.");
-
-        _produtos.Remove(produto);
-        return NoContent();
-    } 
+    [HttpDelete("Delete/{id}")]
+    public ActionResult Delete(int id) =>
+        _repository.Delete(id) ? NoContent() : NotFound($"Produto com ID {id} não encontrado.");
 }
-

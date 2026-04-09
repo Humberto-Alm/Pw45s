@@ -26,3 +26,5 @@ D:\WebPw45s\.NetCrud\NetCrud\obj\Debug\net9.0\refint\NetCrud.dll
 D:\WebPw45s\.NetCrud\NetCrud\obj\Debug\net9.0\NetCrud.pdb
 D:\WebPw45s\.NetCrud\NetCrud\obj\Debug\net9.0\NetCrud.genruntimeconfig.cache
 D:\WebPw45s\.NetCrud\NetCrud\obj\Debug\net9.0\ref\NetCrud.dll
+D:\WebPw45s\.NetCrud\NetCrud\obj\Debug\net9.0\NetCrud.sourcelink.json
+D:\WebPw45s\.NetCrud\NetCrud\bin\Debug\net9.0\Scalar.AspNetCore.dll

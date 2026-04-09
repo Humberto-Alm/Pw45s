@@ -48,9 +48,9 @@
               "target": "Package",
               "version": "[9.0.5, )"
             },
-            "Swashbuckle.AspNetCore": {
+            "Scalar.AspNetCore": {
               "target": "Package",
-              "version": "[10.1.7, )"
+              "version": "[2.13.20, )"
             }
           },
           "imports": [
