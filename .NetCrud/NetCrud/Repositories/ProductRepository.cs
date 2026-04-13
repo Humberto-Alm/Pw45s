@@ -1,46 +1,49 @@
+using Microsoft.EntityFrameworkCore;
+using NetCrud.Data;
 using NetCrud.Model;
 
 namespace NetCrud.Repositories;
 
 public class ProductRepository
 {
-    private static int _nextId = 2;
-    private static List<Product> _products = new()
+    private readonly AppDbContext _context;
+
+    public ProductRepository(AppDbContext context)
     {
-        new Product { Id = 1, Name = "Teclado", Price = 199.99M, Quantity = 5 }
-    };
+        _context = context;
+    }
 
-    public IEnumerable<Product> GetAll() => _products;
+    public IEnumerable<Product> GetAll() => _context.Products.ToList();
 
-    public Product? GetById(int id) => _products.FirstOrDefault(p => p.Id == id);
+    public Product? GetById(int id) => _context.Products.Find(id);
 
     public Product Create(Product product)
     {
-        product.Id = _nextId++;
-        _products.Add(product);
+        _context.Products.Add(product);
+        _context.SaveChanges();
         return product;
     }
 
     public bool Update(int id, Product updated)
     {
         var product = GetById(id);
-        if (product is null) 
-            return false;
+        if (product is null) return false;
 
         product.Name = updated.Name;
         product.Price = updated.Price;
         product.Quantity = updated.Quantity;
 
+        _context.SaveChanges();
         return true;
     }
 
     public bool Delete(int id)
     {
         var product = GetById(id);
-        if (product is null) 
-            return false;
+        if (product is null) return false;
 
-        _products.Remove(product);
+        _context.Products.Remove(product);
+        _context.SaveChanges();
         return true;
     }
 }
