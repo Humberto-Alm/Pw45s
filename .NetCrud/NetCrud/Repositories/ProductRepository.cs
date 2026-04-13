@@ -4,43 +4,43 @@ namespace NetCrud.Repositories;
 
 public class ProductRepository
 {
-    private static int _proximoId = 2;
-    private static List<Product> _produtos = new()
+    private static int _nextId = 2;
+    private static List<Product> _products = new()
     {
-        new Product { Id = 1, Nome = "Teclado", Preco = 199.99M, Quantidade = 5 }
+        new Product { Id = 1, Name = "Teclado", Price = 199.99M, Quantity = 5 }
     };
 
-    public IEnumerable<Product> GetAll() => _produtos;
+    public IEnumerable<Product> GetAll() => _products;
 
-    public Product? GetById(int id) => _produtos.FirstOrDefault(p => p.Id == id);
+    public Product? GetById(int id) => _products.FirstOrDefault(p => p.Id == id);
 
     public Product Create(Product product)
     {
-        product.Id = _proximoId++;
-        _produtos.Add(product);
+        product.Id = _nextId++;
+        _products.Add(product);
         return product;
     }
 
-    public bool Update(int id, Product atualizado)
+    public bool Update(int id, Product updated)
     {
-        var produto = GetById(id);
-        if (produto is null) 
+        var product = GetById(id);
+        if (product is null) 
             return false;
 
-        produto.Nome = atualizado.Nome;
-        produto.Preco = atualizado.Preco;
-        produto.Quantidade = atualizado.Quantidade;
+        product.Name = updated.Name;
+        product.Price = updated.Price;
+        product.Quantity = updated.Quantity;
 
         return true;
     }
 
     public bool Delete(int id)
     {
-        var produto = GetById(id);
-        if (produto is null) 
+        var product = GetById(id);
+        if (product is null) 
             return false;
 
-        _produtos.Remove(produto);
+        _products.Remove(product);
         return true;
     }
 }

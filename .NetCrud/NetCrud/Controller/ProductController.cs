@@ -20,22 +20,22 @@ public class ProductController : ControllerBase
     [HttpGet("GetById/{id}")]
     public ActionResult<Product> GetById(int id)
     {
-        var produto = _repository.GetById(id);
-        return produto is null ? NotFound($"Produto com ID {id} não encontrado.") : Ok(produto);
+        var product = _repository.GetById(id);
+        return product is null ? NotFound($"Produto com ID {id} não encontrado.") : Ok(product);
     }
 
     [HttpPost("Create/{id}")]
     public ActionResult<Product> Create([FromBody] ProductDto dto)
     {
-        var criado = _repository.Create(new Product { Nome = dto.Nome, Preco = dto.Preco, Quantidade = dto.Quantidade });
-        return CreatedAtAction(nameof(GetById), new { id = criado.Id }, criado);
+        var created = _repository.Create(new Product { Name = dto.Name, Price = dto.Price, Quantity = dto.Quantity });
+        return CreatedAtAction(nameof(GetById), new { id = created.Id }, created);
     }
 
     [HttpPut("Update/{id}")]
     public ActionResult Update(int id, [FromBody] ProductDto dto)
     {
-        var atualizado = new Product { Nome = dto.Nome, Preco = dto.Preco, Quantidade = dto.Quantidade };
-        return _repository.Update(id, atualizado) ? NoContent() : NotFound($"Produto com ID {id} não encontrado.");
+        var updated = new Product { Name = dto.Name, Price = dto.Price, Quantity = dto.Quantity };
+        return _repository.Update(id, updated) ? NoContent() : NotFound($"Produto com ID {id} não encontrado.");
     }
 
     [HttpDelete("Delete/{id}")]

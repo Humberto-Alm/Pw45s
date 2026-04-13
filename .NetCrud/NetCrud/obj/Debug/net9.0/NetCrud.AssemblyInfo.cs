@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("NetCrud")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+8b0ff3449214b052e1c18c1095307729b7d5a846")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+3df39082ee6770c1c9d5166c2064120b572651c8")]
 [assembly: System.Reflection.AssemblyProductAttribute("NetCrud")]
 [assembly: System.Reflection.AssemblyTitleAttribute("NetCrud")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
