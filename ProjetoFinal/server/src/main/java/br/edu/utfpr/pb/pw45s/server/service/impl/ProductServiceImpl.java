@@ -20,8 +20,7 @@ import java.util.List;
 
 @Service
 @Slf4j
-public class ProductServiceImpl extends CrudServiceImpl<Product, Long>
-        implements IProductService {
+public class ProductServiceImpl extends CrudServiceImpl<Product, Long> implements IProductService {
 
     private final ProductRepository productRepository;
     private final MinioService minioService;

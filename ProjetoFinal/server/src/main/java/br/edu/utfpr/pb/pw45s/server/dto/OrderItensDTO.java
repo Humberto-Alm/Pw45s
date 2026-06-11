@@ -12,7 +12,7 @@ import java.math.BigDecimal;
 @NoArgsConstructor
 @AllArgsConstructor
 public class OrderItensDTO {
-    private long id;
+    private Long id;
     private Order order;
     private Product product;
     private double quantity;

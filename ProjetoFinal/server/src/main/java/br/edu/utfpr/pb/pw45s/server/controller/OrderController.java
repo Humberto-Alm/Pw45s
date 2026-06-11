@@ -12,10 +12,12 @@ import br.edu.utfpr.pb.pw45s.server.service.IOrderItensService;
 import br.edu.utfpr.pb.pw45s.server.service.IOrderService;
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -73,7 +75,48 @@ public class OrderController extends CrudController<Order, OrderDTO, Long> {
         return ResponseEntity.ok(response);
     }
 
-    // Detalhes do pedido
+    @GetMapping("/status/{status}")
+    public ResponseEntity<List<OrderResponseDTO>> getOrderByStatus(
+            @PathVariable OrderStatus status) {
+
+        Long userId = authService.getAuthenticatedUserId();
+        List<Order> orders = orderService.findAllByUserIdAndStatus(userId, status);
+
+        List<OrderResponseDTO> response = orders.stream()
+                .map(this::convertToResponseDTO)
+                .collect(Collectors.toList());
+
+        return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/client/{username}")
+    public ResponseEntity<List<OrderResponseDTO>> getOrderByClient(
+            @PathVariable String username) {
+
+        List<Order> orders = orderService.findAllByUserUsername(username);
+
+        List<OrderResponseDTO> response = orders.stream()
+                .map(this::convertToResponseDTO)
+                .collect(Collectors.toList());
+
+        return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/date")
+    public ResponseEntity<List<OrderResponseDTO>> getOrderByDate(
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime start,
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime end) {
+
+        Long userId = authService.getAuthenticatedUserId();
+        List<Order> orders = orderService.findAllByUserIdAndDataBetween(userId, start, end);
+
+        List<OrderResponseDTO> response = orders.stream()
+                .map(this::convertToResponseDTO)
+                .collect(Collectors.toList());
+
+        return ResponseEntity.ok(response);
+    }
+
     @GetMapping("/detail/{id}")
     public ResponseEntity<OrderResponseDTO> getOrderDetail(@PathVariable Long id) {
         Order order = orderService.findOrderById(id);
@@ -95,6 +138,8 @@ public class OrderController extends CrudController<Order, OrderDTO, Long> {
         dto.setTotal(order.getTotalOrder());
         dto.setFreight(order.getFreight());
         dto.setPaymentMethod(order.getPaymentMethod());
+        dto.setStatus(order.getStatus());
+        dto.setStatusDescricao(order.getStatus().getDescricao());
 
         if (order.getAddress() != null) {
             dto.setAddress(addressMapper.toDto(order.getAddress()));
@@ -127,6 +172,7 @@ public class OrderController extends CrudController<Order, OrderDTO, Long> {
         User authenticatedUser = authService.getAuthenticatedUser();
 
         Order order = new Order();
+        order.setStatus(OrderStatus.AGUARDANDO_PAGAMENTO);
         order.setData(java.time.LocalDateTime.now());
         order.setUser(authenticatedUser);
 
@@ -156,5 +202,41 @@ public class OrderController extends CrudController<Order, OrderDTO, Long> {
             orderItensService.saveAll(orderItensList);
         }
         return ResponseEntity.status(HttpStatus.CREATED).body(orderMapper.toDto(order));
+    }
+
+    @PostMapping("/{id}/pago")
+    public ResponseEntity<OrderResponseDTO> receberPagamento(@PathVariable Long id) {
+        Long userId = authService.getAuthenticatedUserId();
+        Order order = orderService.findOrderById(id);
+        if (order == null) return ResponseEntity.notFound().build();
+        if (order.getUser().getId() != (userId)) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
+        Order updated = orderService.updateStatus(id, OrderStatus.PAGO);
+        return ResponseEntity.ok(convertToResponseDTO(updated));
+    }
+
+    @PostMapping("/{id}/enviado")
+    public ResponseEntity<OrderResponseDTO> receberEnvio(@PathVariable Long id) {
+        Long userId = authService.getAuthenticatedUserId();
+        Order order = orderService.findOrderById(id);
+        if (order == null) return ResponseEntity.notFound().build();
+        if (order.getUser().getId() != (userId)) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
+        Order updated = orderService.updateStatus(id, OrderStatus.EM_TRANSPORTE);
+        return ResponseEntity.ok(convertToResponseDTO(updated));
+    }
+
+    @PostMapping("/{id}/concluido")
+    public ResponseEntity<OrderResponseDTO> receberConclusao(@PathVariable Long id) {
+        Long userId = authService.getAuthenticatedUserId();
+        Order order = orderService.findOrderById(id);
+        if (order == null) return ResponseEntity.notFound().build();
+        if (order.getUser().getId() != (userId)) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
+        Order updated = orderService.updateStatus(id, OrderStatus.CONCLUIDO);
+        return ResponseEntity.ok(convertToResponseDTO(updated));
     }
 }

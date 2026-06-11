@@ -1,5 +1,6 @@
 package br.edu.utfpr.pb.pw45s.server.dto;
 
+import br.edu.utfpr.pb.pw45s.server.model.OrderStatus;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -12,7 +13,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 public class OrderResponseDTO {
-    private long id;
+    private Long id;
     private LocalDateTime data;
     private UserDTO user;
     private AddressDTO address;
@@ -20,4 +21,6 @@ public class OrderResponseDTO {
     private BigDecimal total;
     private BigDecimal freight;
     private String paymentMethod;
+    private OrderStatus status;
+    private String statusDescricao;
 }

@@ -34,6 +34,10 @@ public class Order {
     @JsonIgnoreProperties({"order"})
     private List<OrderItens> items;
 
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private OrderStatus status = OrderStatus.AGUARDANDO_PAGAMENTO;
+
     @Transient
     public BigDecimal getTotalOrder() {
         BigDecimal totalItems = BigDecimal.ZERO;

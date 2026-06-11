@@ -48,19 +48,10 @@ public class AddressController extends CrudController<Address, AddressDTO, Long>
     @Override
     @PostMapping
     public ResponseEntity<AddressDTO> create(@RequestBody @Valid AddressDTO dto) {
-        // 1. Pega o usuário logado
         User authenticatedUser = authService.getAuthenticatedUser();
-
-        // 2. Converte DTO para Entidade
         Address address = addressMapper.toEntity(dto);
-
-        // 3. Força o vínculo com o usuário
         address.setUser(authenticatedUser);
-
-        // 4. Salva
         Address saved = addressService.save(address);
-
-        // 5. Retorna
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(addressMapper.toDto(saved));
     }
