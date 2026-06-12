@@ -215,13 +215,97 @@ INSERT INTO product_gallery (product_id, image_url) VALUES
 INSERT INTO tb_user (provider, display_name, username, password) VALUES
     ('local', 'Administrador', 'admin', '$2a$10$.PVIfB07x.SfMYTcToxL0.yxcLWU0GbS2NUO1W1QAvqMm/TsFhVem');
 INSERT INTO tb_user (provider, display_name, username, password) VALUES
-    ('local', 'Teste', 'teste', '$2a$10$.PVIfB07x.SfMYTcToxL0.yxcLWU0GbS2NUO1W1QAvqMm/TsFhVem');
+    ('local', 'User', 'user', '$2a$10$.PVIfB07x.SfMYTcToxL0.yxcLWU0GbS2NUO1W1QAvqMm/TsFhVem');
 INSERT INTO tb_user (provider, display_name, username, password) VALUES
     ('local', 'Other', 'other', '$2a$10$.PVIfB07x.SfMYTcToxL0.yxcLWU0GbS2NUO1W1QAvqMm/TsFhVem');
 
--- ============================================================
+-- ENDEREÇOS
+
+INSERT INTO tb_address (user_id, city, logradouro, numero, bairro, complemento, cep, title)
+VALUES (1, 'Curitiba', 'Rua das Flores', '100', 'Centro', 'Apto 12', '80010-000', 'Casa');
+
+INSERT INTO tb_address (user_id, city, logradouro, numero, bairro, complemento, cep, title)
+VALUES (1, 'Curitiba', 'Av. Sete de Setembro', '2500', 'Batel', 'Sala 301', '80250-210', 'Trabalho');
+
+-- Endereços do teste (user_id = 2)
+INSERT INTO tb_address (user_id, city, logradouro, numero, bairro, complemento, cep, title)
+VALUES (2, 'Pato Branco', 'Rua Arariboia', '45', 'Centro', '', '85501-080', 'Casa');
+
+INSERT INTO tb_address (user_id, city, logradouro, numero, bairro, complemento, cep, title)
+VALUES (2, 'Pato Branco', 'Rua Caramuru', '310', 'La Salle', 'Casa 2', '85503-230', 'Casa dos pais');
+
+-- Endereços do other (user_id = 3)
+INSERT INTO tb_address (user_id, city, logradouro, numero, bairro, complemento, cep, title)
+VALUES (3, 'Francisco Beltrão', 'Av. Júlio Assis Cavalheiro', '800', 'Cango', '', '85601-000', 'Casa');
+
+INSERT INTO tb_address (user_id, city, logradouro, numero, bairro, complemento, cep, title)
+VALUES (3, 'Francisco Beltrão', 'Rua Mato Grosso', '150', 'Centro', 'Bloco B Apto 5', '85601-110', 'Apartamento');
+
+INSERT INTO tb_address (user_id, city, logradouro, numero, bairro, complemento, cep, title)
+VALUES (1, 'Curitiba', 'Rua das Flores', '100', 'Centro', 'Apto 12', '80010-000', 'Casa');
+
+INSERT INTO tb_address (user_id, city, logradouro, numero, bairro, complemento, cep, title)
+VALUES (1, 'Curitiba', 'Av. Sete de Setembro', '2500', 'Batel', 'Sala 301', '80250-210', 'Trabalho');
+
+-- Endereços do teste (user_id = 2)
+INSERT INTO tb_address (user_id, city, logradouro, numero, bairro, complemento, cep, title)
+VALUES (2, 'Pato Branco', 'Rua Arariboia', '45', 'Centro', '', '85501-080', 'Casa');
+
+INSERT INTO tb_address (user_id, city, logradouro, numero, bairro, complemento, cep, title)
+VALUES (2, 'Pato Branco', 'Rua Caramuru', '310', 'La Salle', 'Casa 2', '85503-230', 'Casa dos pais');
+
+-- Endereços do other (user_id = 3)
+INSERT INTO tb_address (user_id, city, logradouro, numero, bairro, complemento, cep, title)
+VALUES (3, 'Francisco Beltrão', 'Av. Júlio Assis Cavalheiro', '800', 'Cango', '', '85601-000', 'Casa');
+
+INSERT INTO tb_address (user_id, city, logradouro, numero, bairro, complemento, cep, title)
+VALUES (3, 'Francisco Beltrão', 'Rua Mato Grosso', '150', 'Centro', 'Bloco B Apto 5', '85601-110', 'Apartamento');
+
+-- PEDIDOS
+
+INSERT INTO tb_order (data, freight, payment_method, status, user_id, address_id)
+VALUES ('2026-05-10 14:30:00', 25.00, 'Cartão de Crédito', 'AGUARDANDO_PAGAMENTO', 1, 1);
+
+INSERT INTO tb_order_itens (order_id, product_id, quantity, unit_price)
+VALUES (1, 1, 1, 249.90);
+
+INSERT INTO tb_order (data, freight, payment_method, status, user_id, address_id)
+VALUES ('2026-05-20 09:15:00', 40.00, 'PIX', 'AGUARDANDO_PAGAMENTO', 1, NULL);
+
+INSERT INTO tb_order_itens (order_id, product_id, quantity, unit_price)
+VALUES (2, 2, 1, 399.90);
+INSERT INTO tb_order_itens (order_id, product_id, quantity, unit_price)
+VALUES (2, 8, 2, 415.70);
+
+INSERT INTO tb_order (data, freight, payment_method, status, user_id, address_id)
+VALUES ('2026-05-15 11:00:00', 18.50, 'Boleto', 'AGUARDANDO_PAGAMENTO', 2, 3);
+
+INSERT INTO tb_order_itens (order_id, product_id, quantity, unit_price)
+VALUES (3, 10, 1, 305.80);
+
+INSERT INTO tb_order (data, freight, payment_method, status, user_id, address_id)
+VALUES ('2026-06-01 16:45:00', 30.00, 'Cartão de Débito', 'AGUARDANDO_PAGAMENTO', 2, NULL);
+
+INSERT INTO tb_order_itens (order_id, product_id, quantity, unit_price)
+VALUES (4, 9, 2, 178.90);
+INSERT INTO tb_order_itens (order_id, product_id, quantity, unit_price)
+VALUES (4, 5, 1, 277.24);
+
+INSERT INTO tb_order (data, freight, payment_method, status, user_id, address_id)
+VALUES ('2026-04-22 08:00:00', 15.00, 'Cartão de Crédito', 'AGUARDANDO_PAGAMENTO', 3, 5);
+
+INSERT INTO tb_order_itens (order_id, product_id, quantity, unit_price)
+VALUES (5, 11, 1, 860.90);
+
+INSERT INTO tb_order (data, freight, payment_method, status, user_id, address_id)
+VALUES ('2026-06-05 13:20:00', 22.00, 'PIX', 'AGUARDANDO_PAGAMENTO', 3, NULL);
+
+INSERT INTO tb_order_itens (order_id, product_id, quantity, unit_price)
+VALUES (6, 3, 1, 211.99);
+INSERT INTO tb_order_itens (order_id, product_id, quantity, unit_price)
+VALUES (6, 6, 2, 320.99);
+
 -- PERMISSÕES
--- ============================================================
 
 INSERT INTO tb_authority (authority) VALUES ('ROLE_USER');
 INSERT INTO tb_authority (authority) VALUES ('ROLE_ADMIN');

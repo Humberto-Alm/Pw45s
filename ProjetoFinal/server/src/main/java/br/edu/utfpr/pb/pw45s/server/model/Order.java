@@ -38,6 +38,9 @@ public class Order {
     @Column(nullable = false)
     private OrderStatus status = OrderStatus.AGUARDANDO_PAGAMENTO;
 
+    @Column(name = "comprovante_pdf")
+    private String comprovantePdf;
+
     @Transient
     public BigDecimal getTotalOrder() {
         BigDecimal totalItems = BigDecimal.ZERO;

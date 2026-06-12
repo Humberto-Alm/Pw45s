@@ -4,19 +4,25 @@ import br.edu.utfpr.pb.pw45s.server.dto.*;
 import br.edu.utfpr.pb.pw45s.server.mapper.AddressMapper;
 import br.edu.utfpr.pb.pw45s.server.mapper.OrderMapper;
 import br.edu.utfpr.pb.pw45s.server.mapper.ProductMapper;
+import br.edu.utfpr.pb.pw45s.server.minio.service.MinioService;
 import br.edu.utfpr.pb.pw45s.server.model.*;
 import br.edu.utfpr.pb.pw45s.server.repository.OrderRepository;
 import br.edu.utfpr.pb.pw45s.server.service.AuthService;
 import br.edu.utfpr.pb.pw45s.server.service.ICrudService;
 import br.edu.utfpr.pb.pw45s.server.service.IOrderItensService;
 import br.edu.utfpr.pb.pw45s.server.service.IOrderService;
+import cn.hutool.core.io.resource.InputStreamResource;
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.InputStream;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -31,6 +37,9 @@ public class OrderController extends CrudController<Order, OrderDTO, Long> {
     private final AuthService authService;
     private final ProductMapper productMapper;
     private final OrderRepository orderRepository;
+    private final MinioService minioService;
+
+    private static final String BUCKET_COMPROVANTES = "comprovantes";
 
     public OrderController(IOrderService orderService,
                            IOrderItensService orderItensService,
@@ -38,7 +47,8 @@ public class OrderController extends CrudController<Order, OrderDTO, Long> {
                            AuthService authService,
                            OrderRepository orderRepository,
                            AddressMapper addressMapper,
-                           ProductMapper productMapper) {
+                           ProductMapper productMapper,
+                           MinioService minioService) {
         this.orderService = orderService;
         this.orderItensService = orderItensService;
         this.orderMapper = orderMapper;
@@ -46,6 +56,7 @@ public class OrderController extends CrudController<Order, OrderDTO, Long> {
         this.orderRepository = orderRepository;
         this.addressMapper = addressMapper;
         this.productMapper = productMapper;
+        this.minioService = minioService;
     }
 
     @Override
@@ -238,5 +249,44 @@ public class OrderController extends CrudController<Order, OrderDTO, Long> {
         }
         Order updated = orderService.updateStatus(id, OrderStatus.CONCLUIDO);
         return ResponseEntity.ok(convertToResponseDTO(updated));
+    }
+
+    @PostMapping(value = "/{id}/comprovante", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<OrderResponseDTO> uploadComprovante(
+            @PathVariable Long id,
+            @RequestParam("file") MultipartFile file) {
+
+        Order order = orderService.findOrderById(id);
+        if (order == null) return ResponseEntity.notFound().build();
+
+        if (order.getUser().getId() != authService.getAuthenticatedUserId())
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+
+        try {
+            Order updated = orderService.uploadComprovante(id, file);
+            return ResponseEntity.ok(convertToResponseDTO(updated));
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        }
+    }
+
+    @GetMapping("/{id}/comprovante")
+    public ResponseEntity<InputStreamResource> downloadComprovante(@PathVariable Long id) {
+        Order order = orderService.findOrderById(id);
+        if (order == null) return ResponseEntity.notFound().build();
+
+        if (order.getUser().getId() != authService.getAuthenticatedUserId())
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+
+        if (order.getComprovantePdf() == null)
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+
+        InputStream stream = minioService.downloadObject(BUCKET_COMPROVANTES, order.getComprovantePdf());
+
+        return ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_DISPOSITION,
+                        "attachment; filename=\"comprovante-pedido-" + id + ".pdf\"")
+                .contentType(MediaType.APPLICATION_PDF)
+                .body(new InputStreamResource(stream));
     }
 }

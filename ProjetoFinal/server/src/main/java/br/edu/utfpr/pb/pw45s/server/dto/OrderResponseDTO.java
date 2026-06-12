@@ -23,4 +23,5 @@ public class OrderResponseDTO {
     private String paymentMethod;
     private OrderStatus status;
     private String statusDescricao;
+    private String comprovantePdfUrl;
 }

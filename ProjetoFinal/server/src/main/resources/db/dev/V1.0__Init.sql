@@ -128,3 +128,6 @@ ALTER TABLE tb_order_itens
 ALTER TABLE tb_order_itens
     ADD CONSTRAINT FK_OrderItens_Product
         FOREIGN KEY (product_id) REFERENCES tb_product (id);
+
+ALTER TABLE tb_order
+    ADD COLUMN comprovante_pdf VARCHAR(255);
